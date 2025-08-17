@@ -31,7 +31,6 @@ struct ContentView: View {
                 )
             
             VStack {
-                configSection
                 currentValuesSection
                 chartsSection
                 outputLogSection
@@ -58,13 +57,17 @@ struct ContentView: View {
                             systemImage: monitorManager.isRunning ? "stop.fill" : "play.fill"
                         )
                     }
+                    .keyboardShortcut(
+                        monitorManager.isRunning ? "c" : "r",
+                        modifiers: monitorManager.isRunning ? .control : .command
+                    )
                     .buttonStyle(.borderedProminent)
                     .tint(.pink)
                 }
             }
             .navigationTitle("Serial Plotter")
             .modifier(NavigationSubtitleIfAvailable(subtitle: monitorManager.isRunning ? "Running" : "Press ▶︎ to start."))
-            .frame(minWidth: 800, minHeight: 600)
+            .frame(minWidth: 1000, minHeight: 600)
             .background(
                 VisualEffectView(
                     material: .headerView,
@@ -72,47 +75,6 @@ struct ContentView: View {
                 ).ignoresSafeArea()
             )
         }
-    }
-
-    private var configSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Configuration")
-                .font(.title)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Project Directory:")
-                        .frame(width: 120, alignment: .leading)
-                    TextField("Path to your project directory", text: $monitorManager.workingDirectory)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Button(action: {
-                        selectDirectory()
-                    }) {
-                        Label("Select...", systemImage: "folder")
-                    }
-                    .help("Select directory")
-                }
-                
-                HStack {
-                    Text("Device:")
-                        .frame(width: 120, alignment: .leading)
-                    TextField("e.g. megaatmega2560", text: $monitorManager.device)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    ForEach(devicePresets, id: \.self) { preset in
-                        Button(action: {
-                            monitorManager.device = preset
-                        }) {
-                            Text(preset)
-                        }
-                    }
-                }
-            }
-        }
-        .padding()
-        .background(.ultraThinMaterial)
-        .modifier(GlassEffectIfAvailable(radius: 18))
-        .cornerRadius(18)
-        .padding(.horizontal)
     }
 
     private var currentValuesSection: some View {
@@ -209,16 +171,16 @@ struct ContentView: View {
                     Spacer()
                     
                     
+                    Text("\(monitorManager.readings.count) readings")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                     Button(action: {
                         let text = monitorManager.outputLines.joined(separator: "\n")
                         copyToClipboard(text)
                     }) {
                         Label("Copy", systemImage: "document.on.document")
                     }
-
-                    Text("\(monitorManager.readings.count) readings")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    .clipShape(.capsule)
                 }
             }
             .buttonStyle(.plain)
@@ -239,8 +201,8 @@ struct ContentView: View {
                     .padding()
                     .frame(height: 175)
                     .background(.ultraThinMaterial)
-                    .modifier(GlassEffectIfAvailable(radius: 18))
-                    .cornerRadius(18)
+                    .modifier(GlassEffectIfAvailable(radius: 16))
+                    .cornerRadius(16)
                     .onChange(of: monitorManager.outputLines.count) {
                         withAnimation {
                             proxy.scrollTo(monitorManager.outputLines.count - 1, anchor: .bottom)

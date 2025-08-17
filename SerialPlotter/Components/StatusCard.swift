@@ -49,7 +49,7 @@ struct StatusCard: View {
         }
         .padding(12)
         .frame(minWidth: 125)
-        .modifier(GlassEffectIfAvailable(radius: 18))
+        .modifier(GlassEffectIfAvailable(radius: 16))
         .background {
             if selected {
                 color.opacity(0.2)
@@ -57,7 +57,7 @@ struct StatusCard: View {
                 Rectangle().fill(.ultraThinMaterial)
             }
         }
-        .cornerRadius(18)
+        .cornerRadius(16)
     }
 }
 

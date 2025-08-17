@@ -46,7 +46,7 @@ class DeviceMonitorManager: ObservableObject {
             task?.standardError = pipe
             task?.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
             var env = ProcessInfo.processInfo.environment
-            env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/Cellar/platformio/6.1.18_3/libexec/bin"
+            env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/Cellar/platformio/6.1.16_3/libexec/bin"
             task?.environment = env
         } else {
             outputLines.append("❌ Error: SerialMonitor executable not found in bundle")
