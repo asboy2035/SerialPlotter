@@ -1,3 +1,4 @@
+
 //
 //  ContentView.swift
 //  SerialPlotter
@@ -16,6 +17,7 @@ struct ContentView: View {
     @State var showingLog = false
     
     private let rainbowColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
+    private let devicePresets = ["megaatmega2560", "uno", "nano", "esp32"]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -31,7 +33,7 @@ struct ContentView: View {
             VStack {
                 // Input Section
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Command Configuration")
+                    Text("Configuration")
                         .font(.headline)
                     
                     VStack(alignment: .leading, spacing: 8) {
@@ -49,10 +51,17 @@ struct ContentView: View {
                         }
                         
                         HStack {
-                            Text("Command:")
+                            Text("Device:")
                                 .frame(width: 120, alignment: .leading)
-                            TextField("Full path to command", text: $monitorManager.command)
+                            TextField("e.g. megaatmega2560", text: $monitorManager.device)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                            ForEach(devicePresets, id: \.self) { preset in
+                                Button(action: {
+                                    monitorManager.device = preset
+                                }) {
+                                    Text(preset)
+                                }
+                            }
                         }
                     }
                 }

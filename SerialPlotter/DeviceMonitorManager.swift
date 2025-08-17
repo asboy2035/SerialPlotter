@@ -8,32 +8,41 @@
 import Combine
 import Foundation
 
-
 class DeviceMonitorManager: ObservableObject {
     @Published var readings: [DeviceReading] = []
     @Published var outputLines: [String] = []
     @Published var isRunning = false
-    @Published var workingDirectory = "/Users/ash/your-project-directory"
-    @Published var command = "/Users/ash/.platformio/penv/bin/pio device monitor -e megaatmega2560"
-    
+    @Published var workingDirectory: String {
+        didSet {
+            UserDefaults.standard.set(workingDirectory, forKey: "workingDirectory")
+        }
+    }
+    @Published var device = "megaatmega2560"
+
     private var task: Process?
     private var pipe: Pipe?
     private var outputBuffer = ""  // Buffer to accumulate partial lines
-    
+
+    init() {
+        // Load the saved working directory, or default to the home directory
+        self.workingDirectory = UserDefaults.standard.string(forKey: "workingDirectory") ?? NSHomeDirectory()
+    }
+
     func startMonitoring() {
         stopMonitoring() // Stop any existing monitoring
-        
+
         isRunning = true
         outputLines.append("🚀 Starting monitoring...")
-        
+
         task = Process()
         pipe = Pipe()
-        
+
         task?.standardOutput = pipe
         task?.standardError = pipe
         task?.launchPath = "/bin/bash"
+        let command = "\(NSHomeDirectory())/.platformio/penv/bin/pio device monitor -e \(device)"
         task?.arguments = ["-c", "cd '\(workingDirectory)' && \(command)"]
-        
+
         // Read output continuously
         pipe?.fileHandleForReading.readabilityHandler = { [weak self] handle in
             let data = handle.availableData
@@ -45,7 +54,7 @@ class DeviceMonitorManager: ObservableObject {
                 }
             }
         }
-        
+
         do {
             try task?.run()
         } catch {
@@ -55,7 +64,7 @@ class DeviceMonitorManager: ObservableObject {
             }
         }
     }
-    
+
     func stopMonitoring() {
         task?.terminate()
         pipe?.fileHandleForReading.readabilityHandler = nil
@@ -64,21 +73,21 @@ class DeviceMonitorManager: ObservableObject {
         isRunning = false
         outputLines.append("⏹️ Monitoring stopped")
     }
-    
+
     func clearData() {
         readings.removeAll()
         outputLines.removeAll()
         outputBuffer = ""  // Clear the buffer too
         outputLines.append("🗑️ Data cleared")
     }
-    
+
     private func processOutput(_ output: String) {
         // Add new output to our buffer
         outputBuffer += output
-        
+
         // Split by newlines, but keep the last part (which might be incomplete)
         let components = outputBuffer.components(separatedBy: .newlines)
-        
+
         // Process all complete lines (all but the last component)
         for i in 0..<(components.count - 1) {
             let line = components[i].trimmingCharacters(in: .whitespaces)
@@ -87,16 +96,16 @@ class DeviceMonitorManager: ObservableObject {
                 parseDataLine(line)
             }
         }
-        
+
         // Keep the last component as our new buffer (it might be a partial line)
         outputBuffer = components.last ?? ""
-        
+
         // Keep only recent output lines to prevent memory issues
         if outputLines.count > 500 {
             outputLines = Array(outputLines.suffix(400))
         }
     }
-    
+
     private func parseDataLine(_ line: String) {
         // Parse lines like: "Slayness: 255 | Iconicness: 4595"
         let components = line.components(separatedBy: " | ")
