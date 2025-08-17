@@ -7,12 +7,13 @@
 
 import Foundation
 
-struct DeviceReading: Identifiable {
+class DeviceReading: Identifiable {
     let id = UUID()
     let timestamp: Date
-    let chargingRate: Double
-    let newCharge: Double
-    let battery: Double
-    let charging: Bool
-    let dimmer: Double
+    var values: [String: Double]
+
+    init(timestamp: Date, values: [String: Double]) {
+        self.timestamp = timestamp
+        self.values = values
+    }
 }

@@ -15,6 +15,8 @@ struct ContentView: View {
     @StateObject private var monitorManager = DeviceMonitorManager()
     @State var showingLog = false
     
+    private let rainbowColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
+    
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {}
@@ -62,73 +64,62 @@ struct ContentView: View {
                 
                 // Current Values
                 if let lastReading = monitorManager.readings.last {
-                    HStack(spacing: 8) {
-                        StatusCard(title: "Battery", value: String(format: "%.2f V", lastReading.battery), color: .green)
-                        StatusCard(title: "Charging Rate", value: String(format: "%.0f", lastReading.chargingRate), color: .blue)
-                        StatusCard(title: "Dimmer", value: String(format: "%.0f", lastReading.dimmer), color: .purple)
-                        StatusCard(title: "Status", value: lastReading.charging ? "Charging" : "Not Charging", color: lastReading.charging ? .green : .red)
+                    let keys = lastReading.values.keys.sorted()
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(Array(keys.enumerated()), id: \.element) {
+                                index, key in
+                                if let value = lastReading.values[key] {
+                                    StatusCard(title: key, value: value, color: rainbowColors[index % rainbowColors.count])
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
                     }
                 }
                 
                 // Charts Section
                 if !monitorManager.readings.isEmpty {
+                    let keys = monitorManager.readings.last?.values.keys.sorted() ?? []
                     TabView {
-                        // Battery Level Chart
-                        VStack {
-                            Text("Battery Level Over Time")
-                                .font(.headline)
-                                .padding(.bottom, 5)
-                            
-                            Chart(monitorManager.readings.suffix(50)) { reading in
-                                LineMark(
-                                    x: .value("Time", reading.timestamp),
-                                    y: .value("Battery", reading.battery)
-                                )
-                                .foregroundStyle(.green)
-                                .lineStyle(StrokeStyle(lineWidth: 2))
-                            }
-                            .chartYAxis {
-                                AxisMarks(position: .leading)
-                            }
-                            .chartXAxis {
-                                AxisMarks { _ in
-                                    AxisValueLabel(format: .dateTime.hour().minute())
+                        ForEach(Array(keys.enumerated()), id: \.element) {
+                            index, key in
+                            VStack {
+                                Text("\(key) Over Time")
+                                    .font(.headline)
+                                    .padding(.bottom, 5)
+                                
+                                Chart(monitorManager.readings.suffix(50)) { reading in
+                                    if let value = reading.values[key] {
+                                        if value == 0.0 || value == 1.0 {
+                                            BarMark(
+                                                x: .value("Time", reading.timestamp),
+                                                y: .value(key, value)
+                                            )
+                                            .foregroundStyle(rainbowColors[index % rainbowColors.count])
+                                        } else {
+                                            LineMark(
+                                                x: .value("Time", reading.timestamp),
+                                                y: .value(key, value)
+                                            )
+                                            .foregroundStyle(rainbowColors[index % rainbowColors.count])
+                                            .lineStyle(StrokeStyle(lineWidth: 2))
+                                        }
+                                    }
                                 }
-                            }
-                            .frame(minHeight: 0, maxHeight: .infinity)
-                        }
-                        .tabItem {
-                            Image(systemName: "battery.100")
-                            Text("Battery")
-                        }
-                        
-                        // Charging Rate Chart
-                        VStack {
-                            Text("Charging Rate Over Time")
-                                .font(.headline)
-                                .padding(.bottom, 5)
-                            
-                            Chart(monitorManager.readings.suffix(50)) { reading in
-                                LineMark(
-                                    x: .value("Time", reading.timestamp),
-                                    y: .value("Charging Rate", reading.chargingRate)
-                                )
-                                .foregroundStyle(.blue)
-                                .lineStyle(StrokeStyle(lineWidth: 2))
-                            }
-                            .chartYAxis {
-                                AxisMarks(position: .leading)
-                            }
-                            .chartXAxis {
-                                AxisMarks { _ in
-                                    AxisValueLabel(format: .dateTime.hour().minute())
+                                .chartYAxis {
+                                    AxisMarks(position: .leading)
                                 }
+                                .chartXAxis {
+                                    AxisMarks { _ in
+                                        AxisValueLabel(format: .dateTime.hour().minute())
+                                    }
+                                }
+                                .frame(minHeight: 0, maxHeight: .infinity)
                             }
-                            .frame(minHeight: 0, maxHeight: .infinity)
-                        }
-                        .tabItem {
-                            Image(systemName: "bolt")
-                            Text("Charging")
+                            .tabItem {
+                                Text(key)
+                            }
                         }
                     }
                     .padding()
@@ -166,7 +157,8 @@ struct ContentView: View {
                         ScrollViewReader { proxy in
                             ScrollView {
                                 LazyVStack(alignment: .leading, spacing: 2) {
-                                    ForEach(Array(monitorManager.outputLines.suffix(100).enumerated()), id: \.offset) { index, line in
+                                    ForEach(Array(monitorManager.outputLines.suffix(100).enumerated()), id: \.offset) {
+                                        index, line in
                                         Text(line)
                                             .font(.system(.caption, design: .monospaced))
                                             .padding(.horizontal, 8)

@@ -98,57 +98,24 @@ class DeviceMonitorManager: ObservableObject {
     }
     
     private func parseDataLine(_ line: String) {
-        // Parse lines like: "Charging Rate: 36 | New Charge: 0.06 | Battery: 5.00 | Charging: 1 | Light: Off | Dimmer: 63"
+        // Parse lines like: "Slayness: 255 | Iconicness: 4595"
         let components = line.components(separatedBy: " | ")
-        
-        var chargingRate: Double?
-        var newCharge: Double?
-        var battery: Double?
-        var charging: Bool?
-        var dimmer: Double?
-        
+        var values: [String: Double] = [:]
+
         for component in components {
             let parts = component.components(separatedBy: ": ")
             if parts.count == 2 {
                 let key = parts[0].trimmingCharacters(in: .whitespaces)
-                let valueString = parts[1].trimmingCharacters(in: .whitespaces)
-                
-                switch key {
-                case "Charging Rate":
-                    chargingRate = Double(valueString)
-                case "New Charge":
-                    newCharge = Double(valueString)
-                case "Battery":
-                    battery = Double(valueString)
-                case "Charging":
-                    charging = valueString == "1"
-                case "Dimmer":
-                    dimmer = Double(valueString)
-                default:
-                    break
+                if let value = Double(parts[1].trimmingCharacters(in: .whitespaces)) {
+                    values[key] = value
                 }
             }
         }
-        
-        // Only create a reading if we have the essential data
-        if let chargingRate = chargingRate,
-           let newCharge = newCharge,
-           let battery = battery,
-           let charging = charging,
-           let dimmer = dimmer {
-            
-            let reading = DeviceReading(
-                timestamp: Date(),
-                chargingRate: chargingRate,
-                newCharge: newCharge,
-                battery: battery,
-                charging: charging,
-                dimmer: dimmer
-            )
-            
+
+        if !values.isEmpty {
+            let reading = DeviceReading(timestamp: Date(), values: values)
             readings.append(reading)
-            
-            // Keep only recent readings to prevent memory issues
+
             if readings.count > 1000 {
                 readings = Array(readings.suffix(800))
             }
