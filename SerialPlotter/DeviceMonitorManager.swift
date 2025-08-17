@@ -39,14 +39,17 @@ class DeviceMonitorManager: ObservableObject {
         pipe = Pipe()
         
         task?.executableURL = URL(fileURLWithPath: "/bin/zsh")
-        if let exeURL = Bundle.main.url(forResource: "RunPio", withExtension: nil) {
+        if let exeURL = Bundle.main.url(forResource: "SerialMonitor", withExtension: nil) {
             task?.executableURL = exeURL
             task?.arguments = [device]
             task?.standardOutput = pipe
             task?.standardError = pipe
             task?.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
+            var env = ProcessInfo.processInfo.environment
+            env["PATH"] = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/Cellar/platformio/6.1.18_3/libexec/bin"
+            task?.environment = env
         } else {
-            outputLines.append("❌ Error: RunPio executable not found in bundle")
+            outputLines.append("❌ Error: SerialMonitor executable not found in bundle")
             isRunning = false
             return
         }

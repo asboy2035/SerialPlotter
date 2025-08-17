@@ -207,6 +207,15 @@ struct ContentView: View {
                     Text("Log")
                         .font(.headline)
                     Spacer()
+                    
+                    
+                    Button(action: {
+                        let text = monitorManager.outputLines.joined(separator: "\n")
+                        copyToClipboard(text)
+                    }) {
+                        Label("Copy", systemImage: "document.on.document")
+                    }
+
                     Text("\(monitorManager.readings.count) readings")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -255,6 +264,12 @@ struct ContentView: View {
                 monitorManager.workingDirectory = url.path
             }
         }
+    }
+    
+    private func copyToClipboard(_ string: String) {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents() // Clear any old content
+        pasteboard.setString(string, forType: .string) // Set new string
     }
 }
 
