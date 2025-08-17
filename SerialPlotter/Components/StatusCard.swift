@@ -11,14 +11,16 @@ struct StatusCard: View {
     let title: String
     let value: String
     let color: Color
+    var selected: Bool = false
 
-    init(title: String, value: String, color: Color) {
+    init(title: String, value: String, color: Color, selected: Bool = false) {
         self.title = title
         self.value = value
         self.color = color
+        self.selected = selected
     }
 
-    init(title: String, value: Double, color: Color) {
+    init(title: String, value: Double, color: Color, selected: Bool = false) {
         self.title = title
         self.color = color
         if value == 1.0 {
@@ -28,30 +30,40 @@ struct StatusCard: View {
         } else {
             self.value = String(format: "%.2f", value)
         }
+        self.selected = selected
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            
-            Text(value)
-                .font(.largeTitle)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
+        HStack {
+            VStack(alignment: .leading) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                Text(value)
+                    .font(.largeTitle)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+            Spacer()
         }
         .padding(12)
-        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 80)
-        .background(color.opacity(0.2))
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 18))
+        .frame(minWidth: 125)
+        .modifier(GlassEffectIfAvailable(radius: 18))
+        .background {
+            if selected {
+                color.opacity(0.2)
+            } else {
+                Rectangle().fill(.ultraThinMaterial)
+            }
+        }
         .cornerRadius(18)
     }
 }
 
 #Preview {
     HStack {
-        StatusCard(title: "Battery", value: "5.01 V", color: .green)
+        StatusCard(title: "Battery", value: "5.01 V", color: .green, selected: true)
         StatusCard(title: "Charging Rate", value: "36", color: .blue)
     }
     .padding()

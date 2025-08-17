@@ -1,4 +1,3 @@
-
 //
 //  ContentView.swift
 //  SerialPlotter
@@ -14,7 +13,8 @@ import Foundation
 // Main ContentView
 struct ContentView: View {
     @StateObject private var monitorManager = DeviceMonitorManager()
-    @State var showingLog = false
+    @State private var showingLog = false
+    @State private var selectedKey: String? = nil
     
     private let rainbowColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
     private let devicePresets = ["megaatmega2560", "uno", "nano", "esp32"]
@@ -67,7 +67,7 @@ struct ContentView: View {
                 }
                 .padding()
                 .background(.ultraThinMaterial.opacity(0.1))
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 18))
+                .modifier(GlassEffectIfAvailable(radius: 18))
                 .cornerRadius(18)
                 .padding(.horizontal)
                 
@@ -79,59 +79,61 @@ struct ContentView: View {
                             ForEach(Array(keys.enumerated()), id: \.element) {
                                 index, key in
                                 if let value = lastReading.values[key] {
-                                    StatusCard(title: key, value: value, color: rainbowColors[index % rainbowColors.count])
+                                    StatusCard(title: key, value: value, color: rainbowColors[index % rainbowColors.count], selected: selectedKey == key)
+                                        .onTapGesture {
+                                            self.selectedKey = key
+                                        }
                                 }
                             }
                         }
                         .padding(.horizontal)
                     }
+                    .onChange(of: monitorManager.readings.count) {
+                        // if we don't have a selected key yet, select the first one
+                        if selectedKey == nil {
+                            selectedKey = monitorManager.readings.last?.values.keys.sorted().first
+                        }
+                    }
                 }
                 
                 // Charts Section
                 if !monitorManager.readings.isEmpty {
-                    let keys = monitorManager.readings.last?.values.keys.sorted() ?? []
-                    TabView {
-                        ForEach(Array(keys.enumerated()), id: \.element) {
-                            index, key in
-                            VStack {
-                                Text("\(key) Over Time")
-                                    .font(.headline)
-                                    .padding(.bottom, 5)
-                                
-                                Chart(monitorManager.readings.suffix(50)) { reading in
-                                    if let value = reading.values[key] {
-                                        if value == 0.0 || value == 1.0 {
-                                            BarMark(
-                                                x: .value("Time", reading.timestamp),
-                                                y: .value(key, value)
-                                            )
-                                            .foregroundStyle(rainbowColors[index % rainbowColors.count])
-                                        } else {
-                                            LineMark(
-                                                x: .value("Time", reading.timestamp),
-                                                y: .value(key, value)
-                                            )
-                                            .foregroundStyle(rainbowColors[index % rainbowColors.count])
-                                            .lineStyle(StrokeStyle(lineWidth: 2))
-                                        }
+                    if let selectedKey = selectedKey, let index = monitorManager.readings.last?.values.keys.sorted().firstIndex(of: selectedKey) {
+                        VStack {
+                            Text("\(selectedKey) Over Time")
+                                .font(.headline)
+                                .padding(.bottom, 5)
+                            
+                            Chart(monitorManager.readings.suffix(50)) { reading in
+                                if let value = reading.values[selectedKey] {
+                                    if value == 0.0 || value == 1.0 {
+                                        BarMark(
+                                            x: .value("Time", reading.timestamp),
+                                            y: .value(selectedKey, value)
+                                        )
+                                        .foregroundStyle(rainbowColors[index % rainbowColors.count])
+                                    } else {
+                                        LineMark(
+                                            x: .value("Time", reading.timestamp),
+                                            y: .value(selectedKey, value)
+                                        )
+                                        .foregroundStyle(rainbowColors[index % rainbowColors.count])
+                                        .lineStyle(StrokeStyle(lineWidth: 2))
                                     }
                                 }
-                                .chartYAxis {
-                                    AxisMarks(position: .leading)
-                                }
-                                .chartXAxis {
-                                    AxisMarks { _ in
-                                        AxisValueLabel(format: .dateTime.hour().minute())
-                                    }
-                                }
-                                .frame(minHeight: 0, maxHeight: .infinity)
                             }
-                            .tabItem {
-                                Text(key)
+                            .chartYAxis {
+                                AxisMarks(position: .leading)
                             }
+                            .chartXAxis {
+                                AxisMarks { _ in
+                                    AxisValueLabel(format: .dateTime.hour().minute())
+                                }
+                            }
+                            .frame(minHeight: 0, maxHeight: .infinity)
                         }
+                        .padding()
                     }
-                    .padding()
                 } else {
                     VStack {
                         Image(systemName: "chart.line.uptrend.xyaxis")
@@ -178,7 +180,7 @@ struct ContentView: View {
                             }
                             .frame(height: 150)
                             .background(.ultraThinMaterial)
-                            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 18))
+                            .modifier(GlassEffectIfAvailable(radius: 18))
                             .cornerRadius(18)
                             .onChange(of: monitorManager.outputLines.count) { _ in
                                 withAnimation {
@@ -217,6 +219,8 @@ struct ContentView: View {
                     .tint(.accentColor)
                 }
             }
+            .navigationTitle("Serial Plotter")
+            .modifier(NavigationSubtitleIfAvailable("monitorManager.device"))
             .frame(minWidth: 800, minHeight: 600)
             .background(
                 VisualEffectView(
