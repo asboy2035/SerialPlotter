@@ -109,7 +109,7 @@ struct ContentView: View {
             }
         }
         .padding()
-        .background(.ultraThinMaterial.opacity(0.1))
+        .background(.ultraThinMaterial)
         .modifier(GlassEffectIfAvailable(radius: 18))
         .cornerRadius(18)
         .padding(.horizontal)
@@ -222,17 +222,17 @@ struct ContentView: View {
                                 index, line in
                                 Text(line)
                                     .font(.system(.caption, design: .monospaced))
-                                    .padding(.horizontal, 8)
                                     .padding(.vertical, 1)
                                     .id(index)
                             }
                         }
                     }
-                    .frame(height: 150)
+                    .padding()
+                    .frame(height: 175)
                     .background(.ultraThinMaterial)
                     .modifier(GlassEffectIfAvailable(radius: 18))
                     .cornerRadius(18)
-                    .onChange(of: monitorManager.outputLines.count) { _ in
+                    .onChange(of: monitorManager.outputLines.count) {
                         withAnimation {
                             proxy.scrollTo(monitorManager.outputLines.count - 1, anchor: .bottom)
                         }

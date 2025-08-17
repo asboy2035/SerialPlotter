@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+internal import System
 
 class DeviceMonitorManager: ObservableObject {
     @Published var readings: [DeviceReading] = []
@@ -36,12 +37,21 @@ class DeviceMonitorManager: ObservableObject {
 
         task = Process()
         pipe = Pipe()
-
-        task?.standardOutput = pipe
-        task?.standardError = pipe
-        task?.launchPath = "/bin/bash"
-        let command = "\(NSHomeDirectory())/.platformio/penv/bin/pio device monitor -e \(device)"
-        task?.arguments = ["-c", "cd '\(workingDirectory)' && \(command)"]
+        
+        task?.executableURL = URL(fileURLWithPath: "/bin/zsh")
+        if let exeURL = Bundle.main.url(forResource: "RunPio", withExtension: nil) {
+            task?.executableURL = exeURL
+            task?.arguments = [device]
+            task?.standardOutput = pipe
+            task?.standardError = pipe
+            task?.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
+        } else {
+            outputLines.append("❌ Error: RunPio executable not found in bundle")
+            isRunning = false
+            return
+        }
+        task?.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
+        task?.environment = ProcessInfo.processInfo.environment
 
         // Read output continuously
         pipe?.fileHandleForReading.readabilityHandler = { [weak self] handle in
