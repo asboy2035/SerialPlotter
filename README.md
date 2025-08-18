@@ -1,9 +1,6 @@
-# SerialPlotter
-A modern and simple serial plotter.
-
-**Designed for macOS 26.** Requires macOS 14.6 or later.
-
+![Header](/Screenshots/Header.png)
 ![Screenshot](/Screenshots/Main.png)
+**Designed for macOS 26.** Requires macOS 14.6 or later.
 
 ## Usage
 How to use SerialPlotter
