@@ -131,9 +131,6 @@ int main(int argc, char *argv[]) {
                 fflush(stdout);
             }
         }
-
-        // Check if we should exit (this is basic, in a real app you'd handle signals)
-        // For now, this will run indefinitely until the parent process kills it
     }
 
     close(serial_fd);
