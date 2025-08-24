@@ -2,6 +2,10 @@
 ![Screenshot](/Screenshots/Main.png)
 **Designed for macOS 26.** Requires macOS 14.6 or later.
 
+![Notification](/Screenshots/Notification.png)
+
+NEW: Notifications! SerialPlotter will notify you of any boolean values becoming true.
+
 ## Usage
 How to use SerialPlotter
 - Start with an Arduino project.
@@ -28,3 +32,7 @@ How to use SerialPlotter
   Serial.println(String(dimmerPercentage));
   ```
 - Connect your Arduino to your computer, upload your code, then run SerialPlotter and click on ▶︎.
+
+## Credits
+Thanks to:
+- #### [DynamicNotchKit](https://github.com/MrKai77/DynamicNotchKit): Beautiful notch notifications

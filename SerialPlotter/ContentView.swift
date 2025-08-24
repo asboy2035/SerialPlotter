@@ -8,6 +8,7 @@
 import Combine
 import SwiftUI
 import Charts
+import DynamicNotchKit
 import Foundation
 
 // Main ContentView
