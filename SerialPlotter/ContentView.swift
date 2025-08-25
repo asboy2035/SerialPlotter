@@ -10,12 +10,16 @@ import SwiftUI
 import Charts
 import DynamicNotchKit
 import Foundation
+import Network
 
 // Main ContentView
 struct ContentView: View {
     @StateObject private var monitorManager = DeviceMonitorManager()
+    @StateObject private var networkManager = NetworkManager()
     @State private var showingLog = false
     @State private var selectedKey: String? = nil
+    @State private var showingConnectionSheet = false
+    @State private var showingQRCode = false
     
     private let rainbowColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
     private let devicePresets = ["megaatmega2560", "uno", "nano", "esp32"]
@@ -37,6 +41,18 @@ struct ContentView: View {
                 outputLogSection
             }
             .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button(action: {
+                        showingConnectionSheet = true
+                    }) {
+                        HStack {
+                            Image(systemName: networkManager.isConnected ? "wifi" : "wifi.slash")
+                                .foregroundColor(networkManager.isConnected ? .green : .gray)
+                            Text("Mobile")
+                        }
+                    }
+                }
+                
                 ToolbarItem {
                     Button(action: {
                         monitorManager.clearData()
@@ -66,7 +82,7 @@ struct ContentView: View {
                     .tint(.pink)
                 }
             }
-            .navigationTitle("Serial Plotter")
+            .navigationTitle("SerialBridge")
             .modifier(NavigationSubtitleIfAvailable(subtitle: monitorManager.isRunning ? "Running" : "Press ▶︎ to start."))
             .frame(minWidth: 1000, minHeight: 600)
             .background(
@@ -74,6 +90,15 @@ struct ContentView: View {
                     material: .headerView,
                     blendingMode: .behindWindow
                 ).ignoresSafeArea()
+            )
+        }
+        .onAppear {
+            monitorManager.networkManager = networkManager
+        }
+        .sheet(isPresented: $showingConnectionSheet) {
+            ConnectionSetupSheet(
+                networkManager: networkManager,
+                showingQRCode: $showingQRCode
             )
         }
     }
@@ -231,8 +256,8 @@ struct ContentView: View {
     
     private func copyToClipboard(_ string: String) {
         let pasteboard = NSPasteboard.general
-        pasteboard.clearContents() // Clear any old content
-        pasteboard.setString(string, forType: .string) // Set new string
+        pasteboard.clearContents()
+        pasteboard.setString(string, forType: .string)
     }
 }
 

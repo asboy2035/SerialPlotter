@@ -24,6 +24,8 @@ class DeviceMonitorManager: ObservableObject {
         }
     }
     @Published var device = "megaatmega2560"
+    
+    var networkManager: NetworkManager?
 
     private var task: Process?
     private var pipe: Pipe?
@@ -33,6 +35,32 @@ class DeviceMonitorManager: ObservableObject {
     init() {
         // Load the saved working directory, or default to the home directory
         self.workingDirectory = UserDefaults.standard.string(forKey: "workingDirectory") ?? NSHomeDirectory()
+        
+        // Listen for remote commands
+        NotificationCenter.default.addObserver(
+            forName: .remoteCommand,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            if let command = notification.object as? NetworkCommand {
+                self?.handleRemoteCommand(command)
+            }
+        }
+    }
+    
+    private func handleRemoteCommand(_ command: NetworkCommand) {
+        switch command {
+        case .startMonitoring:
+            if !isRunning {
+                startMonitoring()
+            }
+        case .stopMonitoring:
+            if isRunning {
+                stopMonitoring()
+            }
+        case .clearData:
+            clearData()
+        }
     }
 
     func startMonitoring() {
@@ -40,6 +68,9 @@ class DeviceMonitorManager: ObservableObject {
 
         isRunning = true
         outputLines.append("🚀 Starting monitoring...")
+        
+        // Send sync data to mobile when monitoring starts
+        networkManager?.sendFullSync(readings: readings, logLines: outputLines, isRunning: isRunning)
 
         task = Process()
         pipe = Pipe()
@@ -57,6 +88,7 @@ class DeviceMonitorManager: ObservableObject {
         } else {
             outputLines.append("⚠️ Error: SerialMonitor executable not found in bundle")
             isRunning = false
+            networkManager?.sendCommand(.stopMonitoring)
             return
         }
         task?.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
@@ -81,6 +113,7 @@ class DeviceMonitorManager: ObservableObject {
             DispatchQueue.main.async {
                 self.outputLines.append("⚠️ Error starting command: \(error.localizedDescription)")
                 self.isRunning = false
+                self.networkManager?.sendFullSync(readings: self.readings, logLines: self.outputLines, isRunning: self.isRunning)
             }
         }
     }
@@ -92,6 +125,9 @@ class DeviceMonitorManager: ObservableObject {
         pipe = nil
         isRunning = false
         outputLines.append("ℹ️ Monitoring stopped")
+        
+        // Send sync data to mobile when monitoring stops
+        networkManager?.sendFullSync(readings: readings, logLines: outputLines, isRunning: isRunning)
     }
 
     func clearData() {
@@ -102,6 +138,9 @@ class DeviceMonitorManager: ObservableObject {
         currentNotchDescription = nil
         lastValues.removeAll()  // Clear last values
         outputLines.append("🗑️ Data cleared")
+        
+        // Send sync data to mobile when data is cleared
+        networkManager?.sendFullSync(readings: readings, logLines: outputLines, isRunning: isRunning)
     }
 
     private func processOutputSynchronously(_ output: String) {
@@ -128,6 +167,9 @@ class DeviceMonitorManager: ObservableObject {
                         if !trimmedLine.isEmpty {
                             self?.outputLines.append(trimmedLine)
                             await self?.parseDataLine(trimmedLine)
+                            
+                            // Send log line to network manager
+                            self?.networkManager?.sendLogLine(trimmedLine)
                         }
                     }
                     
@@ -138,11 +180,6 @@ class DeviceMonitorManager: ObservableObject {
                 }
             }
         }
-    }
-
-    private func processOutput(_ output: String) async {
-        // This method is now deprecated, keeping for compatibility
-        // All processing is handled by processOutputSynchronously
     }
 
     private func parseDataLine(_ line: String) async {
@@ -163,6 +200,9 @@ class DeviceMonitorManager: ObservableObject {
         if !values.isEmpty {
             let reading = DeviceReading(timestamp: Date(), values: values)
             readings.append(reading)
+            
+            // Send reading to network manager
+            networkManager?.sendReading(reading)
 
             // Activation Alert logic
             let activatedKeys = values.compactMap { (key, value) in

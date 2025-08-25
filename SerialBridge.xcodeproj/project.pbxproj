@@ -6,46 +6,41 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		5E905A312E5B52A500D378CF /* DynamicNotchKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5E905A302E5B52A500D378CF /* DynamicNotchKit */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
-		5E39F6C62E51D9D000571E8F /* SerialPlotter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SerialPlotter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E905A3B2E5CEC3900D378CF /* SerialBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SerialBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		5E39F6C82E51D9D000571E8F /* SerialPlotter */ = {
+		5E905A3D2E5CEC3900D378CF /* SerialBridge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SerialPlotter;
+			path = SerialBridge;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		5E39F6C32E51D9D000571E8F /* Frameworks */ = {
+		5E905A382E5CEC3900D378CF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E905A312E5B52A500D378CF /* DynamicNotchKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5E39F6BD2E51D9D000571E8F = {
+		5E905A322E5CEC3900D378CF = {
 			isa = PBXGroup;
 			children = (
-				5E39F6C82E51D9D000571E8F /* SerialPlotter */,
-				5E39F6C72E51D9D000571E8F /* Products */,
+				5E905A3D2E5CEC3900D378CF /* SerialBridge */,
+				5E905A3C2E5CEC3900D378CF /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		5E39F6C72E51D9D000571E8F /* Products */ = {
+		5E905A3C2E5CEC3900D378CF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5E39F6C62E51D9D000571E8F /* SerialPlotter.app */,
+				5E905A3B2E5CEC3900D378CF /* SerialBridge.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -53,68 +48,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5E39F6C52E51D9D000571E8F /* SerialPlotter */ = {
+		5E905A3A2E5CEC3900D378CF /* SerialBridge */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5E39F6D12E51D9D100571E8F /* Build configuration list for PBXNativeTarget "SerialPlotter" */;
+			buildConfigurationList = 5E905A462E5CEC3C00D378CF /* Build configuration list for PBXNativeTarget "SerialBridge" */;
 			buildPhases = (
-				5E39F6C22E51D9D000571E8F /* Sources */,
-				5E39F6C32E51D9D000571E8F /* Frameworks */,
-				5E39F6C42E51D9D000571E8F /* Resources */,
+				5E905A372E5CEC3900D378CF /* Sources */,
+				5E905A382E5CEC3900D378CF /* Frameworks */,
+				5E905A392E5CEC3900D378CF /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				5E39F6C82E51D9D000571E8F /* SerialPlotter */,
+				5E905A3D2E5CEC3900D378CF /* SerialBridge */,
 			);
-			name = SerialPlotter;
+			name = SerialBridge;
 			packageProductDependencies = (
-				5E905A302E5B52A500D378CF /* DynamicNotchKit */,
 			);
-			productName = SerialPlotter;
-			productReference = 5E39F6C62E51D9D000571E8F /* SerialPlotter.app */;
+			productName = SerialBridge;
+			productReference = 5E905A3B2E5CEC3900D378CF /* SerialBridge.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		5E39F6BE2E51D9D000571E8F /* Project object */ = {
+		5E905A332E5CEC3900D378CF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					5E39F6C52E51D9D000571E8F = {
+					5E905A3A2E5CEC3900D378CF = {
 						CreatedOnToolsVersion = 26.0;
 					};
 				};
 			};
-			buildConfigurationList = 5E39F6C12E51D9D000571E8F /* Build configuration list for PBXProject "SerialPlotter" */;
+			buildConfigurationList = 5E905A362E5CEC3900D378CF /* Build configuration list for PBXProject "SerialBridge" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 5E39F6BD2E51D9D000571E8F;
+			mainGroup = 5E905A322E5CEC3900D378CF;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				5E905A2F2E5B52A500D378CF /* XCRemoteSwiftPackageReference "DynamicNotchKit" */,
-			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 5E39F6C72E51D9D000571E8F /* Products */;
+			productRefGroup = 5E905A3C2E5CEC3900D378CF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5E39F6C52E51D9D000571E8F /* SerialPlotter */,
+				5E905A3A2E5CEC3900D378CF /* SerialBridge */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		5E39F6C42E51D9D000571E8F /* Resources */ = {
+		5E905A392E5CEC3900D378CF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -124,7 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5E39F6C22E51D9D000571E8F /* Sources */ = {
+		5E905A372E5CEC3900D378CF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -134,7 +125,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		5E39F6CF2E51D9D100571E8F /* Debug */ = {
+		5E905A442E5CEC3C00D378CF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -187,18 +178,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
-		5E39F6D02E51D9D100571E8F /* Release */ = {
+		5E905A452E5CEC3C00D378CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -245,150 +236,112 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
+				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		5E39F6D22E51D9D100571E8F /* Debug */ = {
+		5E905A472E5CEC3C00D378CF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "Serial-Icon";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SerialPlotter/SerialPlotter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9XCKWAKCP6;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Serial Plotter";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is needed to scan QR codes for connecting to your desktop.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/../Frameworks",
+					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/SerialPlotter/Python",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.asboy2035.SerialPlotter;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.asboy2035.SerialBridge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		5E39F6D32E51D9D100571E8F /* Release */ = {
+		5E905A482E5CEC3C00D378CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "Serial-Icon";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SerialPlotter/SerialPlotter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9XCKWAKCP6;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Serial Plotter";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is needed to scan QR codes for connecting to your desktop.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/../Frameworks",
+					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/SerialPlotter/Python",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.asboy2035.SerialPlotter;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.asboy2035.SerialBridge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5E39F6C12E51D9D000571E8F /* Build configuration list for PBXProject "SerialPlotter" */ = {
+		5E905A362E5CEC3900D378CF /* Build configuration list for PBXProject "SerialBridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5E39F6CF2E51D9D100571E8F /* Debug */,
-				5E39F6D02E51D9D100571E8F /* Release */,
+				5E905A442E5CEC3C00D378CF /* Debug */,
+				5E905A452E5CEC3C00D378CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5E39F6D12E51D9D100571E8F /* Build configuration list for PBXNativeTarget "SerialPlotter" */ = {
+		5E905A462E5CEC3C00D378CF /* Build configuration list for PBXNativeTarget "SerialBridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5E39F6D22E51D9D100571E8F /* Debug */,
-				5E39F6D32E51D9D100571E8F /* Release */,
+				5E905A472E5CEC3C00D378CF /* Debug */,
+				5E905A482E5CEC3C00D378CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		5E905A2F2E5B52A500D378CF /* XCRemoteSwiftPackageReference "DynamicNotchKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/MrKai77/DynamicNotchKit.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		5E905A302E5B52A500D378CF /* DynamicNotchKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E905A2F2E5B52A500D378CF /* XCRemoteSwiftPackageReference "DynamicNotchKit" */;
-			productName = DynamicNotchKit;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 5E39F6BE2E51D9D000571E8F /* Project object */;
+	rootObject = 5E905A332E5CEC3900D378CF /* Project object */;
 }
