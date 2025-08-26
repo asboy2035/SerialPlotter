@@ -31,7 +31,7 @@ struct InstructionsView: View {
             }
             
             Button("Next") {
-                networkManager.startServer()
+                networkManager.startListening()
                 showingQRCode = true
             }
             .buttonStyle(.borderedProminent)

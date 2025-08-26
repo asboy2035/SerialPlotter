@@ -32,7 +32,7 @@ struct ConnectionSetupSheet: View {
                 if networkManager.isConnected {
                     ToolbarItem(placement: .destructiveAction) {
                         Button("Disconnect") {
-                            networkManager.stopServer()
+                            networkManager.stopListening()
                             dismiss()
                         }
                     }

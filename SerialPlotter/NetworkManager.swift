@@ -61,160 +61,148 @@ class NetworkManager: ObservableObject {
     @Published var serverAddress: String?
     @Published var qrCodeImage: NSImage?
     
-    let serverPort: UInt16 = 8080
+    let serverPort: UInt16 = 5050
+    
     private var listener: NWListener?
     private var connection: NWConnection?
-    private let queue = DispatchQueue(label: "NetworkManager")
+    private let queue = DispatchQueue(label: "com.serialplotter.network")
     
-    weak var deviceMonitorManager: DeviceMonitorManager?
+    init() {
+        startListening()
+    }
     
-    func startServer() {
+    func startListening() {
         guard listener == nil else { return }
         
         do {
-            let parameters = NWParameters.tcp
-            parameters.allowLocalEndpointReuse = true
-            
-            listener = try NWListener(using: parameters, on: NWEndpoint.Port(integerLiteral: serverPort))
-            
-            listener?.newConnectionHandler = { [weak self] connection in
-                self?.handleNewConnection(connection)
-            }
+            listener = try NWListener(using: .tcp, on: NWEndpoint.Port(rawValue: serverPort) ?? 8080)
             
             listener?.stateUpdateHandler = { [weak self] state in
-                switch state {
-                case .ready:
-                    print("Listener ready on port \(self?.serverPort ?? 0)")
-                    
-                case .failed(let error):
-                    print("Listener failed: \(error)")
-                    self?.resetServerState()
-                    
-                default:
-                    break
+                DispatchQueue.main.async {
+                    switch state {
+                    case .ready:
+                        print("Listener ready on port \(self?.serverPort ?? 0)")
+                        self?.serverAddress = self?.getLocalIPAddress()
+                        self?.generateQRCode()
+                    case .failed(let error):
+                        print("Listener failed with error: \(error)")
+                        self?.isConnected = false
+                        self?.listener?.cancel()
+                        self?.listener = nil
+                    default:
+                        break
+                    }
                 }
+            }
+            
+            listener?.newConnectionHandler = { [weak self] newConnection in
+                print("New connection accepted!")
+                self?.connection = newConnection
+                newConnection.stateUpdateHandler = { [weak self] state in
+                    DispatchQueue.main.async {
+                        switch state {
+                        case .ready:
+                            print("Connection is ready!")
+                            self?.isConnected = true
+                            self?.receiveData()
+                            self?.syncMobile()
+                        case .failed(let error):
+                            print("Connection failed with error: \(error)")
+                            self?.isConnected = false
+                            self?.connection?.cancel()
+                            self?.connection = nil
+                        case .cancelled:
+                            print("Connection cancelled.")
+                            self?.isConnected = false
+                            self?.connection = nil
+                        default:
+                            break
+                        }
+                    }
+                }
+                newConnection.start(queue: self?.queue ?? .main)
             }
             
             listener?.start(queue: queue)
-            
-            // Get the local IP address and generate QR code
-            DispatchQueue.main.async {
-                self.serverAddress = self.getLocalIPAddress()
-                if self.serverAddress != nil {
-                    self.generateQRCode()
-                }
-            }
-            
-            print("Server started on port \(serverPort)")
         } catch {
-            print("Failed to start server: \(error)")
-            resetServerState()
+            print("Failed to start listener: \(error)")
         }
     }
     
-    func stopServer() {
+    func stopListening() {
+        guard listener != nil else { return }
+        
+        print("Stopping network listener...")
         listener?.cancel()
         listener = nil
-        connection?.cancel()
-        connection = nil
+        
+        if let connection = connection {
+            connection.cancel()
+            self.connection = nil
+        }
         
         DispatchQueue.main.async {
             self.isConnected = false
-            self.serverAddress = nil
             self.qrCodeImage = nil
-        }
-        
-        print("Server stopped")
-    }
-    
-    private func resetServerState() {
-        listener?.cancel()
-        listener = nil
-        connection?.cancel()
-        connection = nil
-        
-        DispatchQueue.main.async {
-            self.isConnected = false
             self.serverAddress = nil
-            self.qrCodeImage = nil
         }
     }
     
-    private func handleNewConnection(_ connection: NWConnection) {
-        print("New connection received")
-        
-        // Cancel any existing connection to ensure only one is active
-        self.connection?.cancel()
-        self.connection = connection
-        
-        connection.start(queue: queue)
-        
-        DispatchQueue.main.async {
-            self.isConnected = true
-        }
-        
-        // Send the full current state to the new client
-        sendInitialSync()
-        
-        // Start receiving data
-        receiveData(on: connection)
-        
-        connection.stateUpdateHandler = { [weak self] state in
-            switch state {
-            case .ready:
-                print("Connection ready")
-            case .cancelled, .failed:
-                DispatchQueue.main.async {
-                    self?.isConnected = false
+    func sendFullSync(readings: [DeviceReading], logLines: [String], isRunning: Bool) {
+        guard let connection = connection, isConnected else { return }
+
+        let syncData = SyncData(readings: readings, logLines: logLines, isRunning: isRunning)
+
+        do {
+            let syncDataEncoded = try JSONEncoder().encode(syncData)
+            let message = NetworkMessage(type: .sync, data: syncDataEncoded)
+            let messageData = try JSONEncoder().encode(message)
+
+            connection.send(content: messageData, completion: .contentProcessed { error in
+                if let error = error {
+                    print("Send sync error: \(error)")
                 }
-                print("Connection ended")
-            default:
-                break
-            }
+            })
+        } catch {
+            print("Failed to encode sync data: \(error)")
         }
     }
     
-    private func receiveData(on connection: NWConnection) {
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { [weak self] data, _, isComplete, error in
+    private func receiveData() {
+        guard let connection = connection else { return }
+        
+        connection.receiveMessage { [weak self] (data, context, isComplete, error) in
             if let data = data, !data.isEmpty {
-                self?.handleReceivedData(data)
+                self?.handleMessage(data)
             }
             
             if let error = error {
                 print("Receive error: \(error)")
-                // Connection failed, cancel it
-                connection.cancel()
+                self?.isConnected = false
                 return
             }
             
-            if !isComplete {
-                self?.receiveData(on: connection)
+            if isComplete {
+                print("Message receive complete.")
+                self?.isConnected = false
+            } else {
+                self?.receiveData() // Continue receiving
             }
         }
     }
     
-    private func handleReceivedData(_ data: Data) {
+    private func handleMessage(_ data: Data) {
         do {
             let message = try JSONDecoder().decode(NetworkMessage.self, from: data)
-            
-            switch message.type {
-            case .command:
+            if message.type == .command {
                 if let commandData = message.data,
                    let command = try? JSONDecoder().decode(NetworkCommand.self, from: commandData) {
-                    handleRemoteCommand(command)
+                    print("Received command: \(command.rawValue)")
+                    NotificationCenter.default.post(name: .remoteCommand, object: command)
                 }
-            default:
-                break
             }
         } catch {
-            print("Failed to decode received message: \(error)")
-        }
-    }
-    
-    private func handleRemoteCommand(_ command: NetworkCommand) {
-        DispatchQueue.main.async {
-            // These commands would be handled by the DeviceMonitorManager
-            NotificationCenter.default.post(name: .remoteCommand, object: command)
+            print("Failed to decode message: \(error)")
         }
     }
     
@@ -240,7 +228,7 @@ class NetworkManager: ObservableObject {
         guard let connection = connection, isConnected else { return }
         
         do {
-            let logData = line.data(using: .utf8)
+            let logData = try JSONEncoder().encode(line)
             let message = NetworkMessage(type: .log, data: logData)
             let messageData = try JSONEncoder().encode(message)
             
@@ -254,66 +242,11 @@ class NetworkManager: ObservableObject {
         }
     }
     
-    func sendCommand(_ command: NetworkCommand) {
-        guard let connection = connection, isConnected else { return }
-        
-        do {
-            let commandData = try JSONEncoder().encode(command)
-            let message = NetworkMessage(type: .command, data: commandData)
-            let messageData = try JSONEncoder().encode(message)
-            
-            connection.send(content: messageData, completion: .contentProcessed { error in
-                if let error = error {
-                    print("Send error: \(error)")
-                }
-            })
-        } catch {
-            print("Failed to encode command: \(error)")
-        }
-    }
-    
-    private func sendInitialSync() {
-        guard let connection = connection, isConnected, let deviceMonitorManager = deviceMonitorManager else { return }
-        
-        let syncData = SyncData(
-            readings: deviceMonitorManager.readings,
-            logLines: deviceMonitorManager.outputLines,
-            isRunning: deviceMonitorManager.isRunning
-        )
-        
-        do {
-            let syncDataEncoded = try JSONEncoder().encode(syncData)
-            let message = NetworkMessage(type: .sync, data: syncDataEncoded)
-            let messageData = try JSONEncoder().encode(message)
-            
-            connection.send(content: messageData, completion: .contentProcessed { error in
-                if let error = error {
-                    print("Send sync error: \(error)")
-                }
-            })
-        } catch {
-            print("Failed to encode sync data: \(error)")
-        }
-    }
-    
-    func sendFullSync(readings: [DeviceReading], logLines: [String], isRunning: Bool) {
-        guard let connection = connection, isConnected else { return }
-        
-        let syncData = SyncData(readings: readings, logLines: logLines, isRunning: isRunning)
-        
-        do {
-            let syncDataEncoded = try JSONEncoder().encode(syncData)
-            let message = NetworkMessage(type: .sync, data: syncDataEncoded)
-            let messageData = try JSONEncoder().encode(message)
-            
-            connection.send(content: messageData, completion: .contentProcessed { error in
-                if let error = error {
-                    print("Send sync error: \(error)")
-                }
-            })
-        } catch {
-            print("Failed to encode sync data: \(error)")
-        }
+    private func syncMobile() {
+        // Send initial state
+        let status = StatusData(isRunning: true, readingsCount: 0, logLinesCount: 0)
+        let message = try! JSONEncoder().encode(NetworkMessage(type: .status, data: try! JSONEncoder().encode(status)))
+        connection?.send(content: message, completion: .contentProcessed({ _ in }))
     }
     
     private func getLocalIPAddress() -> String? {
@@ -326,19 +259,19 @@ class NetworkManager: ObservableObject {
                 defer { ptr = ptr?.pointee.ifa_next }
                 
                 let interface = ptr?.pointee
-                let addrFamily = interface?.ifa_addr.pointee.sa_family
                 
-                if addrFamily == UInt8(AF_INET) {
-                    let name = String(cString: (interface?.ifa_name)!)
-                    if name == "en0" || name == "en1" { // WiFi or Ethernet
-                        var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-                        getnameinfo(interface?.ifa_addr, socklen_t((interface?.ifa_addr.pointee.sa_len)!),
+                if (interface?.ifa_flags ?? 0) & UInt32(IFF_LOOPBACK) == 0,
+                   let addr = interface?.ifa_addr.pointee,
+                   addr.sa_family == UInt8(AF_INET) {
+                    
+                    var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+                    
+                    getnameinfo(interface?.ifa_addr, socklen_t((interface?.ifa_addr.pointee.sa_len)!),
                                   &hostname, socklen_t(hostname.count),
                                   nil, socklen_t(0), NI_NUMERICHOST)
-                        address = String(cString: hostname)
-                        if address != "127.0.0.1" {
-                            break
-                        }
+                    address = String(cString: hostname)
+                    if address != "127.0.0.1" {
+                        break
                     }
                 }
             }

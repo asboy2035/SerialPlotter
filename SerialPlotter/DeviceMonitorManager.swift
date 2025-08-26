@@ -17,7 +17,15 @@ class DeviceMonitorManager: ObservableObject {
     private var lastValues: [String: Double] = [:]
     @Published var readings: [DeviceReading] = []
     @Published var outputLines: [String] = []
-    @Published var isRunning = false
+    @Published var isRunning = false {
+        didSet {
+            if isRunning {
+                networkManager?.startListening()
+            } else {
+                networkManager?.stopListening()
+            }
+        }
+    }
     @Published var workingDirectory: String {
         didSet {
             UserDefaults.standard.set(workingDirectory, forKey: "workingDirectory")
@@ -51,15 +59,13 @@ class DeviceMonitorManager: ObservableObject {
     private func handleRemoteCommand(_ command: NetworkCommand) {
         switch command {
         case .startMonitoring:
-            if !isRunning {
-                startMonitoring()
-            }
+            guard !isRunning else { return }
+            self.startMonitoring()
         case .stopMonitoring:
-            if isRunning {
-                stopMonitoring()
-            }
+            guard isRunning else { return }
+            self.stopMonitoring()
         case .clearData:
-            clearData()
+            self.clearData()
         }
     }
 
