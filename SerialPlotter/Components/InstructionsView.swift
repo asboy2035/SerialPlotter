@@ -16,28 +16,24 @@ struct InstructionsView: View {
             VStack(spacing: 15) {
                 Image(systemName: "iphone")
                     .font(.system(size: 50))
-                    .foregroundColor(.blue)
+                    .foregroundColor(.accentColor)
                 
-                Text("Connect Mobile App")
+                Text("Connect SerialBridge")
                     .font(.title2)
                     .fontWeight(.semibold)
             }
             
+            Spacer()
             VStack(alignment: .leading, spacing: 12) {
                 InstructionStep(number: 1, text: "Open SerialBridge on your iPhone/iPad")
                 InstructionStep(number: 2, text: "Tap \"Connect\" on the mobile app")
                 InstructionStep(number: 3, text: "Click \"Next\" below to show QR code")
                 InstructionStep(number: 4, text: "Scan the QR code with your mobile device")
             }
-            
-            Button("Next") {
-                networkManager.startListening()
-                showingQRCode = true
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            Spacer()
         }
         .padding()
+        .frame(minWidth: 450, minHeight: 400)
     }
 }
 
@@ -48,11 +44,11 @@ struct InstructionStep: View {
     var body: some View {
         HStack {
             Text("\(number)")
-                .font(.system(.caption, design: .rounded))
+                .font(.caption)
                 .fontWeight(.bold)
                 .frame(width: 20, height: 20)
-                .background(Circle().fill(.blue))
-                .foregroundColor(.white)
+                .background(Circle().fill(.accent))
+                .modifier(GlassEffectIfAvailable())
             
             Text(text)
                 .font(.body)

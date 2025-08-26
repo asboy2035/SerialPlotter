@@ -15,56 +15,24 @@ struct ConnectedView: View {
         TabView(selection: $selectedTab) {
             PlotView(networkManager: networkManager)
                 .tabItem {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
+                    Image(systemName: "chart.bar")
                     Text("Plot")
                 }
                 .tag(0)
             
             LogView(networkManager: networkManager)
                 .tabItem {
-                    Image(systemName: "list.bullet.rectangle")
+                    Image(systemName: "list.bullet")
                     Text("Log")
                 }
                 .tag(1)
             
             ConnectionInfoView(networkManager: networkManager)
                 .tabItem {
-                    Image(systemName: "wifi")
-                    Text("Connection")
+                    Image(systemName: "iphone.radiowaves.left.and.right")
+                    Text("Sync")
                 }
                 .tag(2)
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                HStack {
-                    Image(systemName: "wifi")
-                        .foregroundColor(.green)
-                    Text("Connected")
-                        .font(.caption)
-                        .foregroundColor(.green)
-                }
-            }
-            
-            ToolbarItem(placement: .navigationBarTrailing) {
-                HStack {
-                    Button(action: {
-                        networkManager.sendCommand(.clearData)
-                    }) {
-                        Image(systemName: "trash")
-                    }
-                    
-                    Button(action: {
-                        if networkManager.isRunning {
-                            networkManager.sendCommand(.stopMonitoring)
-                        } else {
-                            networkManager.sendCommand(.startMonitoring)
-                        }
-                    }) {
-                        Image(systemName: networkManager.isRunning ? "stop.fill" : "play.fill")
-                    }
-                    .foregroundColor(networkManager.isRunning ? .red : .green)
-                }
-            }
         }
     }
 }

@@ -19,10 +19,20 @@ struct PlotView: View {
             VStack(spacing: 16) {
                 currentValuesSection
                 chartsSection
-                Spacer()
             }
             .navigationTitle("Plot")
-            .modifier(NavigationSubtitleIfAvailable(subtitle: networkManager.isRunning ? "Running" : "Stopped"))
+            .modifier(NavigationSubtitleIfAvailable(subtitle: "Streaming"))
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                HStack {
+                    Image(systemName: "wifi")
+                        .foregroundColor(.green)
+                    Text("Connected")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+            }
         }
     }
     
@@ -58,7 +68,7 @@ struct PlotView: View {
     }
     
     private var chartsSection: some View {
-        Group {
+        VStack {
             if !networkManager.readings.isEmpty {
                 if let selectedKey = selectedKey,
                    let index = networkManager.readings.last?.values.keys.sorted().firstIndex(of: selectedKey) {
@@ -99,6 +109,7 @@ struct PlotView: View {
                     .background(.ultraThinMaterial)
                     .cornerRadius(16)
                     .padding(.horizontal)
+                    .frame(minHeight: 0, maxHeight: .infinity)
                 }
             } else {
                 VStack {

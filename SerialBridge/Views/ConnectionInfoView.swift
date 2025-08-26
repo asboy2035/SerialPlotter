@@ -30,14 +30,6 @@ struct ConnectionInfoView: View {
                     }
                 }
                 
-                Section("Desktop Status") {
-                    HStack {
-                        Image(systemName: networkManager.isRunning ? "play.fill" : "stop.fill")
-                            .foregroundColor(networkManager.isRunning ? .green : .red)
-                        Text(networkManager.isRunning ? "Monitoring Active" : "Monitoring Stopped")
-                    }
-                }
-                
                 Section("Data") {
                     HStack {
                         Image(systemName: "chart.bar")
@@ -64,7 +56,7 @@ struct ConnectionInfoView: View {
                 }
             }
             .navigationTitle("Connection")
-            .modifier(NavigationSubtitleIfAvailable(subtitle: "Settings and info"))
+            .modifier(NavigationSubtitleIfAvailable(subtitle: "Settings/Info"))
         }
     }
 }

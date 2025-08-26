@@ -20,48 +20,51 @@ struct ConnectionView: View {
                     Button(action: {
                         showingScanner = true
                     }) {
-                        HStack {
-                            Image(systemName: "qrcode.viewfinder")
-                            Text("Scan QR Code")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
+                        Label("Scan QR Code", systemImage: "qrcode.viewfinder")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
                     }
+                    .buttonStyle(BorderedProminentButtonStyle())
+                    .tint(.accentColor)
+                    .clipShape(.capsule)
+                    .modifier(GlassEffectIfAvailable())
                     
                     Text("or")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                     
-                    VStack(spacing: 12) {
-                        HStack {
-                            Text("Host:")
-                                .frame(width: 60, alignment: .leading)
-                            TextField("192.168.1.100", text: $manualHost)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                        }
-                        
-                        HStack {
-                            Text("Port:")
-                                .frame(width: 60, alignment: .leading)
-                            TextField("8080", text: $manualPort)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .keyboardType(.numberPad)
-                        }
-                        
-                        Button("Connect Manually") {
-                            if let port = UInt16(manualPort) {
-                                networkManager.connectToDesktop(host: manualHost, port: port)
+                    Form {
+                        Section(header: Text("Manual Connection")) {
+                            HStack {
+                                Text("Host:")
+                                    .frame(width: 60, alignment: .leading)
+                                
+                                TextField("192.168.1.100", text: $manualHost)
+                            }
+
+                            HStack {
+                                Text("Port:")
+                                    .frame(width: 60, alignment: .leading)
+                                
+                                TextField("8080", text: $manualPort)
+                                    .keyboardType(.numberPad)
                             }
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(manualHost.isEmpty ? .gray : .green)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                        .disabled(manualHost.isEmpty)
                     }
+                    
+                    Button(action: {
+                        if let port = UInt16(manualPort) {
+                            networkManager.connectToDesktop(host: manualHost, port: port)
+                        }
+                    }) {
+                        Label("Connect Manually", systemImage: "cable.connector.horizontal")
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                    }
+                    .buttonStyle(BorderedProminentButtonStyle())
+                    .tint(manualHost.isEmpty ? Color.secondary : Color.accentColor)
+                    .clipShape(.capsule)
+                    .modifier(GlassEffectIfAvailable())
+                    .disabled(manualHost.isEmpty)
                 }
                 
                 if networkManager.isConnecting {
@@ -80,7 +83,7 @@ struct ConnectionView: View {
                         .multilineTextAlignment(.center)
                         .padding()
                         .background(.red.opacity(0.1))
-                        .cornerRadius(8)
+                        .cornerRadius(12)
                 }
                 
                 Spacer()

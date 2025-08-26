@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct GlassEffectIfAvailable: ViewModifier {
-    var radius: CGFloat
+    var radius: CGFloat?
 
     func body(content: Content) -> some View {
         if #available(iOS 26, macOS 26, *) {
 #if !os(visionOS)
-            content.glassEffect(.regular, in: RoundedRectangle(cornerRadius: radius))
+            if let radius = radius {
+                content.glassEffect(.regular, in: RoundedRectangle(cornerRadius: radius))
+            } else {
+                content.glassEffect()
+            }
 #else
             content
 #endif

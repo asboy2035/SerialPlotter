@@ -23,10 +23,24 @@ struct ConnectionSetupSheet: View {
             }
             .navigationTitle("Mobile Connection")
             .toolbar {
+                if !showingQRCode {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(action: {
+                            networkManager.startListening()
+                            showingQRCode = true
+                        }) {
+                            Label("Next", systemImage: "arrow.forward")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .clipShape(.capsule)
+                    }
+                }
+                
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") {
                         dismiss()
                     }
+                    .clipShape(.capsule)
                 }
                 
                 if networkManager.isConnected {
@@ -35,10 +49,11 @@ struct ConnectionSetupSheet: View {
                             networkManager.stopListening()
                             dismiss()
                         }
+                        .clipShape(.capsule)
                     }
                 }
             }
         }
-        .frame(width: 500, height: 400)
+        .frame(minWidth: 450, minHeight: 450)
     }
 }

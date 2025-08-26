@@ -55,7 +55,7 @@ struct LogView: View {
                 .padding()
             }
             .navigationTitle("Log")
-            .modifier(NavigationSubtitleIfAvailable(subtitle: networkManager.isRunning ? "Running" : "Stopped"))
+            .modifier(NavigationSubtitleIfAvailable(subtitle: "Streaming"))
         }
     }
 }

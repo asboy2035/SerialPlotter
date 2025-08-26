@@ -64,5 +64,6 @@ struct QRCodeView: View {
             }
         }
         .padding()
+        .frame(minWidth: 450, minHeight: 400)
     }
 }
