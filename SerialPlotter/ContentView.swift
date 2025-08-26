@@ -82,7 +82,7 @@ struct ContentView: View {
                     .tint(.pink)
                 }
             }
-            .navigationTitle("SerialBridge")
+            .navigationTitle("SerialPlotter")
             .modifier(NavigationSubtitleIfAvailable(subtitle: monitorManager.isRunning ? "Running" : "Press ▶︎ to start."))
             .frame(minWidth: 1000, minHeight: 600)
             .background(
@@ -94,6 +94,7 @@ struct ContentView: View {
         }
         .onAppear {
             monitorManager.networkManager = networkManager
+            networkManager.syncDataSource = monitorManager
         }
         .sheet(isPresented: $showingConnectionSheet) {
             ConnectionSetupSheet(

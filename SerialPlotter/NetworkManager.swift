@@ -60,6 +60,7 @@ class NetworkManager: ObservableObject {
     @Published var isConnected = false
     @Published var serverAddress: String?
     @Published var qrCodeImage: NSImage?
+    weak var syncDataSource: DeviceMonitorManager?
     
     let serverPort: UInt16 = 5050
     
@@ -105,7 +106,7 @@ class NetworkManager: ObservableObject {
                             print("Connection is ready!")
                             self?.isConnected = true
                             self?.receiveData()
-                            self?.syncMobile()
+                            self?.syncDataSource?.syncAllData()
                         case .failed(let error):
                             print("Connection failed with error: \(error)")
                             self?.isConnected = false
@@ -240,13 +241,6 @@ class NetworkManager: ObservableObject {
         } catch {
             print("Failed to encode log line: \(error)")
         }
-    }
-    
-    private func syncMobile() {
-        // Send initial state
-        let status = StatusData(isRunning: true, readingsCount: 0, logLinesCount: 0)
-        let message = try! JSONEncoder().encode(NetworkMessage(type: .status, data: try! JSONEncoder().encode(status)))
-        connection?.send(content: message, completion: .contentProcessed({ _ in }))
     }
     
     private func getLocalIPAddress() -> String? {

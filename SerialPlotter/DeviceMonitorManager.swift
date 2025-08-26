@@ -17,15 +17,7 @@ class DeviceMonitorManager: ObservableObject {
     private var lastValues: [String: Double] = [:]
     @Published var readings: [DeviceReading] = []
     @Published var outputLines: [String] = []
-    @Published var isRunning = false {
-        didSet {
-            if isRunning {
-                networkManager?.startListening()
-            } else {
-                networkManager?.stopListening()
-            }
-        }
-    }
+    @Published var isRunning = false
     @Published var workingDirectory: String {
         didSet {
             UserDefaults.standard.set(workingDirectory, forKey: "workingDirectory")
@@ -124,6 +116,12 @@ class DeviceMonitorManager: ObservableObject {
 
         do {
             try task?.run()
+            self.isRunning = true
+            // Only send full sync to the mobile app if a connection exists
+            if let networkManager = networkManager, networkManager.isConnected {
+                networkManager.sendFullSync(readings: readings, logLines: outputLines, isRunning: true)
+            }
+            outputLines.append("Plotter started.")
         } catch {
             DispatchQueue.main.async {
                 self.outputLines.append("⚠️ Error starting command: \(error.localizedDescription)")
@@ -131,6 +129,10 @@ class DeviceMonitorManager: ObservableObject {
                 self.networkManager?.sendFullSync(readings: self.readings, logLines: self.outputLines, isRunning: self.isRunning)
             }
         }
+    }
+    
+    func syncAllData() {
+        networkManager?.sendFullSync(readings: readings, logLines: outputLines, isRunning: isRunning)
     }
 
     func stopMonitoring() {
