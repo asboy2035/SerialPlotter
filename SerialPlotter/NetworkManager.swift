@@ -1,6 +1,6 @@
 //
 //  NetworkManager.swift
-//  SerialBridge
+//  SerialPlotter
 //
 //  Created by ash on 8/25/25.
 //
@@ -66,6 +66,8 @@ class NetworkManager: ObservableObject {
     private var connection: NWConnection?
     private let queue = DispatchQueue(label: "NetworkManager")
     
+    weak var deviceMonitorManager: DeviceMonitorManager?
+    
     func startServer() {
         guard listener == nil else { return }
         
@@ -79,17 +81,34 @@ class NetworkManager: ObservableObject {
                 self?.handleNewConnection(connection)
             }
             
+            listener?.stateUpdateHandler = { [weak self] state in
+                switch state {
+                case .ready:
+                    print("Listener ready on port \(self?.serverPort ?? 0)")
+                    
+                case .failed(let error):
+                    print("Listener failed: \(error)")
+                    self?.resetServerState()
+                    
+                default:
+                    break
+                }
+            }
+            
             listener?.start(queue: queue)
             
-            // Get the local IP address
+            // Get the local IP address and generate QR code
             DispatchQueue.main.async {
                 self.serverAddress = self.getLocalIPAddress()
-                self.generateQRCode()
+                if self.serverAddress != nil {
+                    self.generateQRCode()
+                }
             }
             
             print("Server started on port \(serverPort)")
         } catch {
             print("Failed to start server: \(error)")
+            resetServerState()
         }
     }
     
@@ -108,9 +127,24 @@ class NetworkManager: ObservableObject {
         print("Server stopped")
     }
     
+    private func resetServerState() {
+        listener?.cancel()
+        listener = nil
+        connection?.cancel()
+        connection = nil
+        
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.serverAddress = nil
+            self.qrCodeImage = nil
+        }
+    }
+    
     private func handleNewConnection(_ connection: NWConnection) {
         print("New connection received")
         
+        // Cancel any existing connection to ensure only one is active
+        self.connection?.cancel()
         self.connection = connection
         
         connection.start(queue: queue)
@@ -119,8 +153,8 @@ class NetworkManager: ObservableObject {
             self.isConnected = true
         }
         
-        // Send initial sync data
-        sendSyncData()
+        // Send the full current state to the new client
+        sendInitialSync()
         
         // Start receiving data
         receiveData(on: connection)
@@ -148,6 +182,8 @@ class NetworkManager: ObservableObject {
             
             if let error = error {
                 print("Receive error: \(error)")
+                // Connection failed, cancel it
+                connection.cancel()
                 return
             }
             
@@ -178,7 +214,6 @@ class NetworkManager: ObservableObject {
     private func handleRemoteCommand(_ command: NetworkCommand) {
         DispatchQueue.main.async {
             // These commands would be handled by the DeviceMonitorManager
-            // For now, we'll post notifications that the UI can observe
             NotificationCenter.default.post(name: .remoteCommand, object: command)
         }
     }
@@ -237,12 +272,14 @@ class NetworkManager: ObservableObject {
         }
     }
     
-    private func sendSyncData() {
-        // This would be called from DeviceMonitorManager with current state
-        // For now, we'll send empty sync data
-        guard let connection = connection, isConnected else { return }
+    private func sendInitialSync() {
+        guard let connection = connection, isConnected, let deviceMonitorManager = deviceMonitorManager else { return }
         
-        let syncData = SyncData(readings: [], logLines: [], isRunning: false)
+        let syncData = SyncData(
+            readings: deviceMonitorManager.readings,
+            logLines: deviceMonitorManager.outputLines,
+            isRunning: deviceMonitorManager.isRunning
+        )
         
         do {
             let syncDataEncoded = try JSONEncoder().encode(syncData)

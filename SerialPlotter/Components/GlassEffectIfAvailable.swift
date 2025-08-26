@@ -22,3 +22,9 @@ struct GlassEffectIfAvailable: ViewModifier {
         }
     }
 }
+
+#Preview {
+    RoundedRectangle(cornerRadius: 18)
+        .frame(width: 180, height: 120)
+        .modifier(GlassEffectIfAvailable(radius: 18))
+}

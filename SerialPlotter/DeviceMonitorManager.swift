@@ -88,7 +88,8 @@ class DeviceMonitorManager: ObservableObject {
         } else {
             outputLines.append("⚠️ Error: SerialMonitor executable not found in bundle")
             isRunning = false
-            networkManager?.sendCommand(.stopMonitoring)
+            // Send a full sync to correctly update the mobile app
+            networkManager?.sendFullSync(readings: readings, logLines: outputLines, isRunning: isRunning)
             return
         }
         task?.currentDirectoryURL = URL(fileURLWithPath: workingDirectory)
@@ -104,6 +105,14 @@ class DeviceMonitorManager: ObservableObject {
                         self?.processOutputSynchronously(output)
                     }
                 }
+            }
+        }
+
+        task?.terminationHandler = { [weak self] process in
+            DispatchQueue.main.async {
+                guard let self = self, self.isRunning else { return }
+                self.outputLines.append("🛑 Monitoring terminated with status \(process.terminationStatus)")
+                self.stopMonitoring()
             }
         }
 
