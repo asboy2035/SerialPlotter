@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var mobileNetworkManager = MobileNetworkManager()
+    @StateObject var mobileNetworkManager: MobileNetworkManager
     @State private var selectedTab = 0
     
     var body: some View {
@@ -23,5 +23,7 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    @Previewable @StateObject var mobileNetworkManager = MobileNetworkManager()
+    
+    ContentView(mobileNetworkManager: mobileNetworkManager)
 }

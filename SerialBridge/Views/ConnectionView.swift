@@ -17,17 +17,28 @@ struct ConnectionView: View {
     var body: some View {
         VStack {
             VStack {
-                ConnectionOptionCard(systemImage: "qrcode.viewfinder", systemImageColor: Color.accent, title: "QR Code", subtitle: "Scan QR code from SerialPlotter.")
-                    .onTapGesture {
-                        showingScanner = true
-                    }
+                ConnectionOptionCard(
+                    systemImage: "qrcode.viewfinder",
+                    systemImageColor: Color.accent,
+                    title: "QR Code",
+                    subtitle: "Scan QR code from SerialPlotter."
+                )
+                .onTapGesture {
+                    showingScanner = true
+                }
+                
                 Text("or")
                     .foregroundStyle(.secondary)
 
-                ConnectionOptionCard(systemImage: "rectangle.and.pencil.and.ellipsis", systemImageColor: Color.indigo, title: "Manual Entry", subtitle: "Enter host and port manually.")
-                    .onTapGesture {
-                        showingManualConnection = true
-                    }
+                ConnectionOptionCard(
+                    systemImage: "rectangle.and.pencil.and.ellipsis",
+                    systemImageColor: Color.indigo,
+                    title: "Manual Entry",
+                    subtitle: "Enter host and port manually."
+                )
+                .onTapGesture {
+                    showingManualConnection = true
+                }
             }
             
             Spacer()
@@ -54,13 +65,21 @@ struct ConnectionView: View {
         .navigationTitle("Connect")
         .modifier(NavigationSubtitleIfAvailable(subtitle: "SerialBridge"))
         .sheet(isPresented: $showingScanner) {
-            QRScannerView { result in
-                showingScanner = false
-                networkManager.handleQRCode(result)
-            }
+            QRScannerScreen(
+                networkManager: networkManager,
+                showingQRCodeScreen: $showingScanner
+            )
         }
         .sheet(isPresented: $showingManualConnection) {
             VStack {
+                PlaceholderItem(
+                    systemImage: "rectangle.and.pencil.and.ellipsis",
+                    systemImageColor: Color.indigo,
+                    title: "Manual Entry",
+                    subtitle: "Enter host and port manually.",
+                    isProminent: true
+                )
+                
                 Form {
                     Section(header: Text("Manual Connection")) {
                         HStack {

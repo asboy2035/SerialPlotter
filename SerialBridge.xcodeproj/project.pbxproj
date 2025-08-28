@@ -10,9 +10,22 @@
 		5E905A3B2E5CEC3900D378CF /* SerialBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SerialBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5E5168822E60A42F0010D24E /* Exceptions for "SerialBridge" folder in "SerialBridge" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5E905A3A2E5CEC3900D378CF /* SerialBridge */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5E905A3D2E5CEC3900D378CF /* SerialBridge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5E5168822E60A42F0010D24E /* Exceptions for "SerialBridge" folder in "SerialBridge" target */,
+			);
 			path = SerialBridge;
 			sourceTree = "<group>";
 		};
@@ -256,6 +269,7 @@
 				DEVELOPMENT_TEAM = 9XCKWAKCP6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SerialBridge/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is needed to scan QR codes for connecting to your desktop.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -294,6 +308,7 @@
 				DEVELOPMENT_TEAM = 9XCKWAKCP6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SerialBridge/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera access is needed to scan QR codes for connecting to your desktop.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

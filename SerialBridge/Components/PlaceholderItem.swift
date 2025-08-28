@@ -12,6 +12,7 @@ struct PlaceholderItem: View {
     let systemImageColor: Color
     let title: String
     let subtitle: String
+    var isProminent: Bool = false
     
     var body: some View {
         VStack {
@@ -28,7 +29,7 @@ struct PlaceholderItem: View {
                 Text(subtitle)
                     .font(.caption)
             }
-            .foregroundStyle(.secondary)
+            .foregroundStyle(isProminent ? .primary : .secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

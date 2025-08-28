@@ -51,6 +51,7 @@ struct ConnectionSetupSheet: View {
                 ToolbarItem(placement: .destructiveAction) {
                     Button {
                         networkManager.stopListening()
+                        showingQRCode = false
                         dismiss()
                     } label: {
                         Label("Disconnect", systemImage: "iphone.slash")

@@ -18,6 +18,54 @@ struct QRScannerView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: QRScannerViewController, context: Context) {}
 }
 
+struct QRScannerScreen: View {
+    @ObservedObject var networkManager: MobileNetworkManager
+    @State private var scannedCode: String? = nil
+    @Binding var showingQRCodeScreen: Bool
+
+    var body: some View {
+        VStack {
+            PlaceholderItem(
+                systemImage: "qrcode",
+                systemImageColor: Color.accent,
+                title: "Scan QR Code",
+                subtitle: "Scan QR code from SerialPlotter.",
+                isProminent: true
+            )
+            .frame(height: 250)
+            
+            QRScannerView { code in
+                scannedCode = code
+                networkManager.handleQRCode(code)
+                showingQRCodeScreen = false
+            }
+            .overlay(
+                Color.indigo
+                    .blendMode(.color)
+            )
+            .overlay(
+                Group {
+                    if #available(iOS 18.0, visionOS 2.0, *) {
+                        Image(systemName: "viewfinder")
+                            .resizable()
+                            .scaledToFit()
+                            .symbolEffect(.breathe)
+                            .frame(width: 225, height: 225)
+                    } else {
+                        Image(systemName: "viewfinder")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 225, height: 225)
+                    }
+                }
+            )
+            .mask(RoundedRectangle(cornerRadius: 48))
+            .mask(RoundedRectangle(cornerRadius: 48).padding(12).blur(radius: 12))
+            .scaleEffect(0.9)
+        }
+    }
+}
+
 class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     let onCodeScanned: (String) -> Void
     private var captureSession: AVCaptureSession!
