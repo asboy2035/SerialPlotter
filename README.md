@@ -1,13 +1,18 @@
-![Header](/Screenshots/Header.png)
-![Screenshot](/Screenshots/Main.png)
-**Designed for macOS 26.** Requires macOS 14.6 or later.
+![SerialHeader](/Screenshots/SerialHeaderImage.jpg)
 
-![Notification](/Screenshots/Notification.png)
+**Designed for macOS, iOS, and visionOS 26.** 
+Requires macOS 14.6, iOS 17.6, and visionOS 1.3 or later.
 
-NEW: Notifications! SerialPlotter will notify you of any boolean values becoming true.
+---
 
-## Usage
-How to use SerialPlotter
+# Instructions
+How to use SerialPlotter and SerialBridge.
+- [SerialPlotter](#serialplotter)
+- [SerialBridge](#serialbridge)
+
+![SerialPlotter](/Screenshots/Header.png)
+## SerialPlotter
+How to use SerialPlotter:
 - Start with an Arduino project.
 - Initialize the serial:
   ```cpp
@@ -33,6 +38,17 @@ How to use SerialPlotter
   ```
 - Connect your Arduino to your computer, upload your code, then run SerialPlotter and click on ▶︎.
 
-## Credits
+![SerialBridge](/Screenshots/BridgeHeader.png)
+## SerialBridge
+How to use SerialBridge:
+- Follow the [SerialPlotter instructions](#serialplotter) first.
+- Click the "Mobile" button in SerialPlotter.
+- Click "Next" in SerialPlotter.
+- Open the SerialBridge app and click "QR Code", or simply scan the QR code with the Camera app.
+- You should see your data.
+
+---
+
+# Credits
 Thanks to:
 - #### [DynamicNotchKit](https://github.com/MrKai77/DynamicNotchKit): Beautiful notch notifications
