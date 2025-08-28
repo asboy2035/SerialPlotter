@@ -12,7 +12,7 @@ struct ContentView: View {
     @State private var selectedTab = 0
     
     var body: some View {
-        Group {
+        NavigationStack {
             if mobileNetworkManager.isConnected {
                 ConnectedView(networkManager: mobileNetworkManager, selectedTab: $selectedTab)
             } else {

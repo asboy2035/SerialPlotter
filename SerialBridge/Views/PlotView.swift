@@ -112,17 +112,12 @@ struct PlotView: View {
                     .frame(minHeight: 0, maxHeight: .infinity)
                 }
             } else {
-                VStack {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 50))
-                    Text("No data yet")
-                        .font(.headline)
-                    Text("Start monitoring on desktop to see charts")
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                }
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                PlaceholderItem(
+                    systemImage: "chart.bar",
+                    systemImageColor: Color.accent,
+                    title: "No Data Yet",
+                    subtitle: "Start monitoring on desktop to see charts."
+                )
             }
         }
     }

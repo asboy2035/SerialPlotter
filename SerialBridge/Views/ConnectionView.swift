@@ -10,93 +10,108 @@ import SwiftUI
 struct ConnectionView: View {
     @ObservedObject var networkManager: MobileNetworkManager
     @State private var showingScanner = false
+    @State private var showingManualConnection: Bool = false
     @State private var manualHost = ""
     @State private var manualPort = "8080"
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 30) {
-                VStack(spacing: 20) {
-                    Button(action: {
+        VStack {
+            VStack {
+                ConnectionOptionCard(systemImage: "qrcode.viewfinder", systemImageColor: Color.accent, title: "QR Code", subtitle: "Scan QR code from SerialPlotter.")
+                    .onTapGesture {
                         showingScanner = true
-                    }) {
-                        Label("Scan QR Code", systemImage: "qrcode.viewfinder")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
                     }
-                    .buttonStyle(BorderedProminentButtonStyle())
-                    .tint(.accentColor)
-                    .clipShape(.capsule)
-                    .modifier(GlassEffectIfAvailable())
-                    
-                    Text("or")
-                        .foregroundStyle(.secondary)
-                    
-                    Form {
-                        Section(header: Text("Manual Connection")) {
-                            HStack {
-                                Text("Host:")
-                                    .frame(width: 60, alignment: .leading)
-                                
-                                TextField("192.168.1.100", text: $manualHost)
-                            }
+                Text("or")
+                    .foregroundStyle(.secondary)
 
-                            HStack {
-                                Text("Port:")
-                                    .frame(width: 60, alignment: .leading)
-                                
-                                TextField("8080", text: $manualPort)
-                                    .keyboardType(.numberPad)
-                            }
+                ConnectionOptionCard(systemImage: "rectangle.and.pencil.and.ellipsis", systemImageColor: Color.indigo, title: "Manual Entry", subtitle: "Enter host and port manually.")
+                    .onTapGesture {
+                        showingManualConnection = true
+                    }
+            }
+            
+            Spacer()
+            if networkManager.isConnecting {
+                HStack {
+                    ProgressView()
+                    Text("Connecting...")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical)
+            }
+            
+            if let error = networkManager.connectionError {
+                Text(error)
+                    .foregroundStyle(.red)
+                    .font(.caption)
+                    .padding(18)
+                    .background(.red.opacity(0.2))
+                    .cornerRadius(22)
+            }
+        }
+        .padding()
+        .navigationTitle("Connect")
+        .modifier(NavigationSubtitleIfAvailable(subtitle: "SerialBridge"))
+        .sheet(isPresented: $showingScanner) {
+            QRScannerView { result in
+                showingScanner = false
+                networkManager.handleQRCode(result)
+            }
+        }
+        .sheet(isPresented: $showingManualConnection) {
+            VStack {
+                Form {
+                    Section(header: Text("Manual Connection")) {
+                        HStack {
+                            Text("Host:")
+                                .frame(width: 60, alignment: .leading)
+                            
+                            TextField("192.168.1.100", text: $manualHost)
+                        }
+                        
+                        HStack {
+                            Text("Port:")
+                                .frame(width: 60, alignment: .leading)
+                            
+                            TextField("8080", text: $manualPort)
+                                .keyboardType(.numberPad)
                         }
                     }
+                }
+                Spacer()
+                
+                HStack {
+                    Button(action: {
+                        showingManualConnection = false
+                    }) {
+                        Label("Cancel", systemImage: "xmark")
+                            .padding(.vertical, 4)
+                    }
+                    .buttonStyle(BorderedButtonStyle())
+                    .clipShape(.capsule)
+                    
+                    Spacer()
                     
                     Button(action: {
                         if let port = UInt16(manualPort) {
                             networkManager.connectToDesktop(host: manualHost, port: port)
                         }
                     }) {
-                        Label("Connect Manually", systemImage: "cable.connector.horizontal")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
+                        Label("Connect", systemImage: "cable.connector.horizontal")
+                            .padding(.vertical, 4)
                     }
                     .buttonStyle(BorderedProminentButtonStyle())
                     .tint(manualHost.isEmpty ? Color.secondary : Color.accentColor)
                     .clipShape(.capsule)
-                    .modifier(GlassEffectIfAvailable())
                     .disabled(manualHost.isEmpty)
                 }
-                
-                if networkManager.isConnecting {
-                    VStack {
-                        ProgressView()
-                        Text("Connecting...")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                if let error = networkManager.connectionError {
-                    Text(error)
-                        .foregroundColor(.red)
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                        .background(.red.opacity(0.1))
-                        .cornerRadius(12)
-                }
-                
-                Spacer()
             }
             .padding()
-            .navigationTitle("Connect")
-            .modifier(NavigationSubtitleIfAvailable(subtitle: "SerialBridge"))
-            .sheet(isPresented: $showingScanner) {
-                QRScannerView { result in
-                    showingScanner = false
-                    networkManager.handleQRCode(result)
-                }
-            }
         }
     }
+}
+
+#Preview {
+    ConnectionView(networkManager: MobileNetworkManager())
 }

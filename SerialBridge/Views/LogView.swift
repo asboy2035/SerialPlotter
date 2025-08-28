@@ -14,16 +14,12 @@ struct LogView: View {
         NavigationView {
             VStack {
                 if networkManager.logLines.isEmpty {
-                    VStack {
-                        Image(systemName: "doc.text")
-                            .font(.system(size: 50))
-                        Text("No logs yet")
-                            .font(.headline)
-                        Text("Start monitoring to see logs")
-                            .font(.caption)
-                    }
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    PlaceholderItem(
+                        systemImage: "doc.text",
+                        systemImageColor: Color.yellow,
+                        title: "No Logs Yet",
+                        subtitle: "Start monitoring to see logs."
+                    )
                 } else {
                     ScrollViewReader { proxy in
                         ScrollView {

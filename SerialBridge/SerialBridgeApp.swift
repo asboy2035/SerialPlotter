@@ -11,7 +11,13 @@ import SwiftUI
 struct SerialBridgeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if #available(iOS 26.0, visionOS 26.0, *) {
+                GlassEffectContainer {
+                    ContentView()
+                }
+            } else {
+                ContentView()
+            }
         }
     }
 }
