@@ -47,7 +47,7 @@ struct ContentView: View {
                     }) {
                         HStack {
                             Image(systemName: networkManager.isConnected ? "wifi" : "wifi.slash")
-                                .foregroundColor(networkManager.isConnected ? .green : .gray)
+                                .foregroundStyle(networkManager.isConnected ? .teal : .secondary)
                             Text("Mobile")
                         }
                     }
@@ -172,16 +172,12 @@ struct ContentView: View {
                     .padding()
                 }
             } else {
-                VStack {
-                    Image(systemName: "chart.line.uptrend.xyaxis")
-                        .font(.system(size: 50))
-                    Text("No data yet")
-                        .font(.headline)
-                    Text("Start monitoring to see real-time charts")
-                        .font(.caption)
-                }
-                .foregroundStyle(.secondary)
-                .frame(minHeight: 0, maxHeight: .infinity)
+                PlaceholderItem(
+                    systemImage: "chart.bar",
+                    systemImageColor: Color.accent,
+                    title: "No Data Yet",
+                    subtitle: "Start monitoring to see real-time charts."
+                )
             }
         }
     }

@@ -29,7 +29,7 @@ struct ConnectedView: View {
             
             ConnectionInfoView(networkManager: networkManager)
                 .tabItem {
-                    Image(systemName: "iphone.radiowaves.left.and.right")
+                    Image(systemName: "macbook.and.iphone")
                     Text("Sync")
                 }
                 .tag(2)
