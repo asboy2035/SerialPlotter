@@ -40,28 +40,34 @@ struct QRScannerScreen: View {
                 showingQRCodeScreen = false
             }
             .overlay(
-                Color.indigo
-                    .blendMode(.color)
+                LinearGradient(
+                    colors: [.indigo, .accent],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .blendMode(.color)
             )
             .overlay(
                 Group {
                     if #available(iOS 18.0, visionOS 2.0, *) {
                         Image(systemName: "viewfinder")
                             .resizable()
+                            .fontWeight(.ultraLight)
                             .scaledToFit()
                             .symbolEffect(.breathe)
                             .frame(width: 225, height: 225)
                     } else {
                         Image(systemName: "viewfinder")
                             .resizable()
+                            .fontWeight(.ultraLight)
                             .scaledToFit()
                             .frame(width: 225, height: 225)
                     }
                 }
             )
             .mask(RoundedRectangle(cornerRadius: 48))
-            .mask(RoundedRectangle(cornerRadius: 48).padding(12).blur(radius: 12))
-            .scaleEffect(0.9)
+            .mask(RoundedRectangle(cornerRadius: 48).padding().blur(radius: 8))
+            .scaleEffect(0.95)
         }
     }
 }

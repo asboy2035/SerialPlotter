@@ -22,10 +22,19 @@ struct PlaceholderItem: View {
                 .frame(width: 50, height: 50)
                 .foregroundStyle(systemImageColor)
                 .modifier(GradientSymbolIfAvailable())
+                .background(
+                    Image(systemName: systemImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 50, height: 50)
+                        .foregroundStyle(systemImageColor.opacity(0.6))
+                        .modifier(GradientSymbolIfAvailable())
+                        .blur(radius: 6)
+                )
             
             VStack(spacing: 4) {
                 Text(title)
-                    .font(.headline)
+                    .font(isProminent ? .title2 : .headline)
                 Text(subtitle)
                     .font(.caption)
             }

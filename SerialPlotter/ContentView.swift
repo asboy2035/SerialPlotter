@@ -79,7 +79,7 @@ struct ContentView: View {
                         modifiers: monitorManager.isRunning ? .control : .command
                     )
                     .buttonStyle(.borderedProminent)
-                    .tint(.pink)
+                    .tint(.accent)
                 }
             }
             .navigationTitle("SerialPlotter")
@@ -209,26 +209,36 @@ struct ContentView: View {
             .buttonStyle(.plain)
             
             if showingLog {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 2) {
-                            ForEach(Array(monitorManager.outputLines.suffix(100).enumerated()), id: \.offset) {
-                                index, line in
-                                Text(line)
-                                    .font(.system(.caption, design: .monospaced))
-                                    .padding(.vertical, 1)
-                                    .id(index)
+                if monitorManager.outputLines.isEmpty {
+                    PlaceholderItem(
+                        systemImage: "list.star",
+                        systemImageColor: Color.pink,
+                        title: "No Logs Yet",
+                        subtitle: "Start monitoring to see the output."
+                    )
+                    .frame(height: 175)
+                } else {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 2) {
+                                ForEach(Array(monitorManager.outputLines.suffix(100).enumerated()), id: \.offset) {
+                                    index, line in
+                                    Text(line)
+                                        .font(.system(.caption, design: .monospaced))
+                                        .padding(.vertical, 1)
+                                        .id(index)
+                                }
                             }
                         }
-                    }
-                    .padding()
-                    .frame(height: 175)
-                    .background(.ultraThinMaterial)
-                    .modifier(GlassEffectIfAvailable(radius: 16))
-                    .cornerRadius(16)
-                    .onChange(of: monitorManager.outputLines.count) {
-                        withAnimation {
-                            proxy.scrollTo(monitorManager.outputLines.count - 1, anchor: .bottom)
+                        .padding()
+                        .frame(height: 175)
+                        .background(.ultraThinMaterial)
+                        .modifier(GlassEffectIfAvailable(radius: 16))
+                        .cornerRadius(16)
+                        .onChange(of: monitorManager.outputLines.count) {
+                            withAnimation {
+                                proxy.scrollTo(monitorManager.outputLines.count - 1, anchor: .bottom)
+                            }
                         }
                     }
                 }
