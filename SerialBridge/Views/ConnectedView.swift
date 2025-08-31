@@ -12,7 +12,33 @@ struct ConnectedView: View {
     @Binding var selectedTab: Int
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        if #available(iOS 26.0, visionOS 26.0, *) {
+            TabView {
+                Tab {
+                    PlotView(networkManager: networkManager)
+                } label: {
+                    Label("Plot", systemImage: "chart.bar")
+                }
+                
+                Tab {
+                    LogView(networkManager: networkManager)
+                } label: {
+                    Label("Log", systemImage: "list.bullet")
+                }
+                
+                Tab {
+                    ConnectionInfoView(networkManager: networkManager)
+                } label: {
+                    Label("Sync", systemImage: "macbook.and.iphone")
+                }
+                
+                Tab(role: .search) {
+                    NavigationStack {
+                        SearchView(networkManager: networkManager)
+                    }
+                }
+            }
+        } else {
             PlotView(networkManager: networkManager)
                 .tabItem {
                     Image(systemName: "chart.bar")
