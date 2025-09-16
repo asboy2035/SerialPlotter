@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var selectedKey: String? = nil
     @State private var showingConnectionSheet = false
     @State private var showingQRCode = false
+    @State private var showingUrlError: Bool = false
     
     private let rainbowColors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
     private let devicePresets = ["megaatmega2560", "uno", "nano", "esp32"]
@@ -63,11 +64,7 @@ struct ContentView: View {
                 
                 ToolbarItem {
                     Button(action: {
-                        if monitorManager.isRunning {
-                            monitorManager.stopMonitoring()
-                        } else {
-                            monitorManager.startMonitoring()
-                        }
+                        toggleMonitoring()
                     }) {
                         Label(
                             monitorManager.isRunning ? "Stop" : "Start",
@@ -101,6 +98,34 @@ struct ContentView: View {
                 networkManager: networkManager,
                 showingQRCode: $showingQRCode
             )
+        }
+        .onOpenURL { url in
+            print("Opened from URL: \(url)")
+            
+            switch url.host {
+            case "start": monitorManager.startMonitoring()
+            case "stop": monitorManager.stopMonitoring()
+            case "toggle": toggleMonitoring()
+            default: showUrlError()
+            }
+        }
+        .alert("Invalid URL",
+               isPresented: $showingUrlError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("No action is linked to the body of the URL that was used.")
+        }
+    }
+    
+    private func showUrlError() {
+        showingUrlError = true
+    }
+    
+    private func toggleMonitoring() {
+        if monitorManager.isRunning {
+            monitorManager.stopMonitoring()
+        } else {
+            monitorManager.startMonitoring()
         }
     }
 

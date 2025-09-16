@@ -10,8 +10,12 @@ import SwiftUI
 @main
 struct SerialPlotterApp: App {
     var body: some Scene {
-        WindowGroup {
+        Window("Main", id: "serialMain") {
             ContentView()
+                .onDisappear() {
+                    NSApplication.shared.terminate(nil)
+                }
         }
+        .handlesExternalEvents(matching: Set(["start", "stop", "toggle"]))
     }
 }
